@@ -1,10 +1,15 @@
+/*========
+Подключение jQuery
+=========*/
 (function () {
     var e = document.createElement('script');
     e.src = '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js';
     document.getElementById('system_msg').appendChild(e);
 }());
 
-
+/*========
+Модуль iLike
+=========*/
 var iLike = (function($){
 	return {
 		init : function(){
@@ -54,23 +59,39 @@ var iLike = (function($){
 				var
 					jthis = likeRows.eq(iLike.getPosts.idx - 1),//текущий блок новости
 					likeBlock = jthis.find('.post_like.fl_r'),//кнопка лайка
-					hasLike = likeBlock.children('.post_like_icon');//иконка с отметкой лайка
+					hasLike = likeBlock.children('.post_like_icon'),//иконка с отметкой лайка
+					promoted = jthis.find('.wall_text_name_explain_promoted_post');//рекламная запись
 
 				console.log(iLike.getPosts.idx);
 
 				if(likeBlock.length){//если не рекламный блок
 					console.log('not commercial');
-					if( hasLike.hasClass('my_like') === false ){//если не был лайк
-						iLike.like(likeBlock, iLike.getRandom(23000, 59000), iLike.getPosts);//ставим лайк
-						console.log('notLike');
-					}else{//если был лайк
-						console.log('hasLike');
-						iLike.getPosts();//вызываем работу цикла getPosts дальше
+					if(promoted.length){
+						console.log('promoted');
+						if(iLike.getPosts.idx === likeRowsLength ){//если этой последний блок
+							console.log('last');
+							setTimeout(function(){
+								iLike.checkNews();//запускам проверку новостей
+							}, 59000);
+						}else{
+							iLike.getPosts();//вызываем работу цикла getPosts дальше
+						}
+					}else{
+						if( hasLike.hasClass('my_like') === false ){//если не был лайк
+							iLike.like(likeBlock, iLike.getRandom(23000, 59000), iLike.getPosts);//ставим лайк
+							console.log('notLike');
+						}else{//если был лайк
+							console.log('hasLike');
+							iLike.getPosts();//вызываем работу цикла getPosts дальше
+						}
 					}
+					
 				}else{//рекламный блок
 					console.log('commercial');
 					if(iLike.getPosts.idx === likeRowsLength ){//если этой последний блок
-						iLike.checkNews();//запускаем проверку новостей
+						setTimeout(function(){
+							iLike.checkNews();//запускам проверку новостей
+						}, 59000);
 						console.log('last');
 					}else{
 						iLike.getPosts();//вызываем работу цикла getPosts дальше
@@ -88,4 +109,7 @@ var iLike = (function($){
 	}
 })(jQuery);
 
+/*========
+Инициализация модуля
+=========*/
 iLike.init();
